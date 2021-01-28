@@ -6,9 +6,12 @@ const BundleAnalyzerPlugin = require("webpack-bundle-analyzer")
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 const extensions = fs.readdirSync("./src/entries/");
-const entry = Object.fromEntries(
-  extensions.map((e) => [e.substring(0, e.length - 3), `./src/entries/${e}`])
-);
+// const entry = Object.fromEntries(
+//   extensions.map((e) => [e.substring(0, e.length - 3), `./src/entries/${e}`])
+// );
+
+const entry = {}
+entry["diagram-codes"]= "./src/entries/diagram-codes.ts"
 
 module.exports = (env) => ({
   entry,
