@@ -1,9 +1,10 @@
-import { createButtonObserver, runExtension } from "../entry-helpers";
+import { createButtonObserver, getTextTreeByBlockUid, runExtension, TreeNode } from "../entry-helpers";
 import { render } from "../components/DiagramCodes";
-import { addButtonListener, getParentUidByBlockUid,getOrderByBlockUid  } from "roam-client";
-
+import { addButtonListener, getParentUidByBlockUid,getOrderByBlockUid, getUidsFromButton  } from "roam-client";
 import diagramEngine from 'diagram-codes-engine-client'
-diagramEngine.setEnginePath('https://web-engine-demo-dev.diagram.codes/apirender/')
+
+
+import { ContentState } from "draft-js";
 
 /* Create The Code Block*/
 const createDiagram = async(_:{
@@ -44,8 +45,30 @@ blockUid: string
 
   
 }
+
+const isCodeBlock = (codeBlock: TreeNode):boolean=>{
+  return codeBlock.text.startsWith('```');
+}
+
+//Get the diagram code without the markdown syntax
+const getCodeBlockValue = (str: string) : string => {
+  const contents = str.split('```')
+  const contentWithoutTicks = contents[1];
+  //Remove first line (language)
+  return contentWithoutTicks.split('\n').slice(1).join('\n')
+}
+
 runExtension("diagram-codes", () => {
-    console.log('prueba extension diagram codes')
-    diagramEngine.setEnginePath('https://web-engine-demo-dev.diagram.codes/apirender/')
+   
     addButtonListener("Add Diagram", createDiagram)
+
+    //Observar boton Get Diagram
+    createButtonObserver({
+      shortcut: "diagram.codes",
+      attribute: "diagram-codes",
+      render: (b: HTMLButtonElement) => {
+        const {blockUid} = getUidsFromButton(b);
+        render({ blockId: blockUid, parent: b.parentElement})   
+      }    
+    });
 });
