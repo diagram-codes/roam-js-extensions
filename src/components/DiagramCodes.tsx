@@ -7,7 +7,7 @@ import diagramEngine from 'diagram-codes-engine-client'
 diagramEngine.setEnginePath('https://web-engine-demo-dev.diagram.codes/apirender/')
 
 
-const DiagramPreview = ({ blockId, target }: { blockId: string, target:HTMLElement}) => {
+const DiagramPreview = ({ blockId, targetElem }: { blockId: string, targetElem:HTMLElement}) => {
   const [code, setCode] = useState('')
   const containerRef = useRef<HTMLElement>()
 
@@ -17,16 +17,17 @@ const DiagramPreview = ({ blockId, target }: { blockId: string, target:HTMLEleme
   useEffect(() => {
     /* Every second, check for updates */
     const interval = setInterval(() => {
-      const tree = getTextTreeByBlockUid(blockId)
+      const parentId = getParentUidByBlockUid(blockId)
+      const tree = getTextTreeByBlockUid(parentId)
       console.log('tree', tree)
       //Asumimos que el primer bloque es el diagrama
-      const codeBlock = tree.children[0]
+      const codeBlock = tree.children.find( c => c.text.trim().startsWith('```'))
       if (codeBlock && isCodeBlock(codeBlock)) {
         const diagramCode = getCodeBlockValue(codeBlock.text);
         console.log('diagram code:', diagramCode)
         
         let diagramParams = {
-          container: target,
+          container: targetElem,
           type: 'graph',
           code: diagramCode
         }
@@ -47,7 +48,7 @@ const DiagramPreview = ({ blockId, target }: { blockId: string, target:HTMLEleme
 }
 
 const isCodeBlock = (codeBlock: TreeNode): boolean => {
-  return codeBlock.text.startsWith('```');
+  return codeBlock.text.trim().startsWith('```');
 }
 
 //Get the diagram code without the markdown syntax
@@ -63,28 +64,19 @@ export const render = ({ blockId, parent }: {
   blockId: string;
   parent: HTMLElement;
 }): void => {
+  console.log('parent render:', render)
   const container = document.createElement('div')
   container.style.width = "100%";
   container.style.height = "300px";
   container.style.overflow = "auto";
-  //const iframe = document.createElement("iframe");
-  // iframe.style.width = "100%";
-  // iframe.style.height = "400px";
-  // iframe.style.border = "none";
-  // iframe.style.minWidth = "400px";
-  // iframe.style.minHeight = "400px";
-  // iframe.style.overflow = "auto";
-  // iframe.setAttribute("diagram-renderer", "");
-  // iframe.setAttribute("ready", "false");
-  // iframe.src = diagramEngine.enginePath;
-  // parent.appendChild(iframe)
-  parent.appendChild(container);
+ 
   diagramEngine.init(container);
+  parent.appendChild(container);
   const dummy = document.createElement('div')
   parent.appendChild(dummy)
   
 
-  ReactDOM.render(<DiagramPreview blockId={blockId} target={container} />, dummy);
+  ReactDOM.render(<DiagramPreview blockId={blockId} targetElem={container} />, dummy);
 
   /* Nota: Creo que no necesitamos React */
 };

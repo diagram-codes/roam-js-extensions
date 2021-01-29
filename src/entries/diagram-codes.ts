@@ -22,10 +22,10 @@ blockUid: string
   ${"```"}
   `
 
-  /* Use alpha api to create the block with the diagram code*/
+
   window.roamAlphaAPI.createBlock({
     block: {
-      string: code,
+      string: "{{diagram.codes}}",
     },
     location: {
       "parent-uid": blockUid,
@@ -33,15 +33,17 @@ blockUid: string
     },
   });
 
-  window.roamAlphaAPI.createBlock({
-    block: {
-      string: "{{Refresh Diagram}}",
-    },
-    location: {
-      "parent-uid": blockUid,
-      order: getOrderByBlockUid(blockUid),
-    },
-  });
+    /* Use alpha api to create the block with the diagram code*/
+    window.roamAlphaAPI.createBlock({
+      block: {
+        string: code,
+      },
+      location: {
+        "parent-uid": blockUid,
+        order: getOrderByBlockUid(blockUid)+2,
+      },
+    });
+  
 
   
 }
