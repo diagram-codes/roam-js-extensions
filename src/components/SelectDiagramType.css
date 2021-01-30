@@ -1,0 +1,25 @@
+.diagram-type-selector {
+ color: #5C7080;
+ margin-top: 1rem;
+}
+
+.diagram-type-selector .diagram-type-label {
+    text-transform: capitalize;
+    display: block;
+
+}
+
+
+.diagram-type-selector .diagram-type-list {
+    display: block;
+}
+
+.diagram-type-selector .diagram-type-list .diagram-type-item {
+    padding: 2px;
+    font-size: 0.9rem;
+    color: #5C7080;
+    display: inline-block;
+    border: solid 1px #5C7080;
+    margin: 2px;
+    
+}

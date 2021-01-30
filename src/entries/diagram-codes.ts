@@ -2,26 +2,54 @@ import { createButtonObserver, getTextTreeByBlockUid, runExtension, TreeNode } f
 import { render } from "../components/DiagramCodes";
 import { addButtonListener, getParentUidByBlockUid,getOrderByBlockUid, getUidsFromButton  } from "roam-client";
 import diagramEngine from 'diagram-codes-engine-client'
-
+import {render as renderDiagramSelector} from '../components/SelectDiagramType'
 
 import { ContentState } from "draft-js";
+import templates,  { DiagramTypeItem } from "../components/diagrams/templates";
+
 
 /* Create The Code Block*/
-const createDiagram = async(_:{
-  [key: string]: string;
-}, 
-blockUid: string
+const createDiagram = async(
+b: HTMLButtonElement
 ) => {
-  const parentUid = getParentUidByBlockUid(blockUid)
-  const code = `
-  ${"```"}
-  # DIAGRAM: graph
-  a->b
-  b->c,d,e
-  e->a
-  ${"```"}
-  `
 
+  /* Add a button so its button observer can track changes to the
+     code block and update the preview */
+  const addMonitorButton = (blockUid:string, diagramTypeId:string) => {
+        //Change block to display the diagram.codes button (the button that serves as monitor)
+        const item = templates[diagramTypeId];
+        console.log('item')
+        window.roamAlphaAPI.updateBlock({
+          block: {
+            uid:blockUid,
+            string: `{{Diagram Type - ${item.name}}}`,
+          },
+        });
+        
+  }
+
+  const addCodeBlock = (blockUid: string, code: string) => {
+    window.roamAlphaAPI.createBlock({
+      block: {
+        string: `${"```"}${code}${"```"}`,
+      },
+      location: {
+        "parent-uid": blockUid,
+        order: getOrderByBlockUid(blockUid)+2,
+      },
+    });
+  }
+
+  
+  const {blockUid, parentUid} =  getUidsFromButton(b)
+  renderDiagramSelector({blockId:blockUid, parent: b.parentElement, onItemSelected: (diagramTypeId:string, item:DiagramTypeItem)=>{
+    console.log('item', item);
+    addMonitorButton(blockUid, diagramTypeId);
+    addCodeBlock(blockUid, item.template);
+  }})
+
+
+  /*
 
   window.roamAlphaAPI.createBlock({
     block: {
@@ -33,7 +61,6 @@ blockUid: string
     },
   });
 
-    /* Use alpha api to create the block with the diagram code*/
     window.roamAlphaAPI.createBlock({
       block: {
         string: code,
@@ -44,7 +71,7 @@ blockUid: string
       },
     });
   
-
+    */
   
 }
 
@@ -60,17 +87,33 @@ const getCodeBlockValue = (str: string) : string => {
   return contentWithoutTicks.split('\n').slice(1).join('\n')
 }
 
+/*Create a button observer for every type of diagram 
+TODO: Test performance implications because we are creating more than 10 observers
+*/
+const createButtonObservers = () => {
+ const ids = Object.keys(templates);
+ ids.forEach(diagramType => {
+   const item = templates[diagramType]
+  createButtonObserver({
+    //Note: this has to match the button created when the "Add diagram" command is executed
+    shortcut: `Diagram Type - ${item.name}`,
+    attribute: "diagram-codes",
+    render: (b: HTMLButtonElement) => {
+      //Monitor block and update preview
+      console.log('process diagram:', item )
+    }    
+  });
+ });
+}
+
 runExtension("diagram-codes", () => {
    
-    addButtonListener("Add Diagram", createDiagram)
+   createButtonObserver({
+     shortcut: "add diagram",
+     attribute:"diagram-codes",
+     render: createDiagram
+   })
 
-    //Observar boton Get Diagram
-    createButtonObserver({
-      shortcut: "diagram.codes",
-      attribute: "diagram-codes",
-      render: (b: HTMLButtonElement) => {
-        const {blockUid} = getUidsFromButton(b);
-        render({ blockId: blockUid, parent: b.parentElement})   
-      }    
-    });
+    createButtonObservers();
+
 });
