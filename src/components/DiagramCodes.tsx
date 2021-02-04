@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom';
 import { addButtonListener, getParentUidByBlockUid, getOrderByBlockUid, getUidsFromButton } from "roam-client";
 import diagramEngine from 'diagram-codes-engine-client'
 
-diagramEngine.setEnginePath('https://web-engine-demo-dev.diagram.codes/apirender/')
+
 
 
 const DiagramPreview = ({ blockId, targetElem }: { blockId: string, targetElem:HTMLElement}) => {

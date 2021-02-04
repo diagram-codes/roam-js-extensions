@@ -26,7 +26,7 @@ const SelectDiagramType = ({ onItemSelected }: { onItemSelected: (diagramTypeId:
 
     return (
         <div className="diagram-type-selector">
-            <span className="diagram-type-label"> What type of diagram do you want? </span>
+            <span className="diagram-type-label"> Please select the diagram type:</span>
             <div className="diagram-type-list">
             {DiagramTypes.map((dtype: string) => (
                 <a className="diagram-type-item" href="#" onClick={handleItemSelect.bind(this, dtype, templates[dtype])}>

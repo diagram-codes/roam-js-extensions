@@ -1,0 +1,11 @@
+.diagram-codes-preview-container{ 
+ overflow: auto;
+}
+
+.diagram-codes-preview-container iframe {
+    transform: scale(0.7);
+}
+
+.rm-block--closed .diagram-codes-preview-container {
+    height: 0;
+}

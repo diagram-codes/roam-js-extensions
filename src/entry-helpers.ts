@@ -178,6 +178,15 @@ export const createObserver = (
     document.getElementsByClassName("roam-body")[0]
   );
 
+  export const createObserverForTarget = (
+    mutationCallback: (mutationList?: MutationRecord[]) => void,
+    target: HTMLElement
+  ): void =>
+    createDivObserver(
+      mutationCallback,
+      target
+    );
+
 const getMutatedNodes = ({
   ms,
   tag,
@@ -240,6 +249,43 @@ export const createHTMLObserver = ({
   });
 };
 
+
+export const createHTMLObserverForTarget = ({
+  callback,
+  tag,
+  className,
+  removeCallback,
+  target,
+}: {
+  callback: (b: HTMLElement) => void;
+  tag: string;
+  className: string;
+  removeCallback?: (b: HTMLElement) => void;
+  target: HTMLElement;
+}): void => {
+  const blocks = target.getElementsByClassName(className);
+  Array.from(blocks).forEach(callback);
+
+  createObserverForTarget((ms) => {
+    const addedNodes = getMutatedNodes({
+      ms,
+      nodeList: "addedNodes",
+      tag,
+      className,
+    });
+    addedNodes.forEach(callback);
+    if (removeCallback) {
+      const removedNodes = getMutatedNodes({
+        ms,
+        nodeList: "removedNodes",
+        tag,
+        className,
+      });
+      removedNodes.forEach(removeCallback);
+    }
+  }, target);
+};
+
 export const createBlockObserver = (
   blockCallback: (b: HTMLDivElement) => void,
   blockRefCallback: (b: HTMLSpanElement) => void
@@ -255,6 +301,7 @@ export const createBlockObserver = (
     className: "rm-block-ref",
   });
 };
+
 
 export const createPageObserver = (
   name: string,
