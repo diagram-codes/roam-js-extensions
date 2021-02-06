@@ -10,8 +10,9 @@ const diagramTypes =  {
   ['tree']: {name: "Tree(Vertical)", template: require('./tree').default},
   ['timeline']: {name: "Timeline", template: require('./timeline').default},
   ['state-machine']: {name: "State Machine", template: require('./state-machine').default},
-  ['entity-relationship']: {name: "Entity-relashionship", template: require('./entity-relationship').default},
+  ['entity-relationship']: {name: "Entity-relationship", template: require('./entity-relationship').default},
   ['class_diag']: {name: "Class", template: require('./class_diag').default},
+  ['dataflow']: {name: "Data Flow", template: require('./dataflow').default},
 }
 
 export interface DiagramTypeItem {

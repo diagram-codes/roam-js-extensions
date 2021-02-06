@@ -1,0 +1,16 @@
+export default {
+  ['flowchart']: require('./flowchart').default,
+  ['graph']: require('./graph').default,
+  ['stack']: require('./layer-stack').default,
+  ['onion-layers']: require('./onion-layers').default,
+  ['sequence']: require('./sequence').default,
+  ['system-layers']: require('./system-layers').default,
+  ['tree-left-to-right']: require('./tree-horizontal').default,
+  ['mind-map']: require('./mind-map').default,
+  ['tree']: require('./tree').default,
+  ['timeline']: require('./timeline').default,
+  ['state-machine']: require('./state-machine').default,
+  ['entity-relationship']: require('./entity-relationship').default,
+  ['class_diag']: require('./class_diag').default,
+  ['dataflow']: require('./dataflow').default,
+}

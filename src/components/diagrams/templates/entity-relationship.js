@@ -1,14 +1,13 @@
 export default `
 #table definitions
-
-TABLE "Country" as Country:
+TABLE "Country" as country:
 PK"country_id"
 "name"
 "latitude"
 "longitude"
 "code"
 
-TABLE "Person" as Per:
+TABLE "Person" as person:
 PK"person_id"
 FK"company_id"
 FK"country_id"
@@ -19,7 +18,7 @@ FK"country_id"
 "lastname"
 "birthday"
 
-TABLE "Company" as Comp: 
+TABLE "Company" as company: 
 PK"company_id"
 "nit"
 "name"
@@ -27,19 +26,19 @@ PK"company_id"
 "type"
 "location"
 
-TABLE "Product" as Prod:
+TABLE "Product" as product:
 PK"product_id"
 FK"product_type"
 "product_name"
 "available"
 
-TABLE "Product Categories" as ProdCat:
+TABLE "Product Categories" as prodCategories:
 PK"product_id"
 FK"product_type"
 "product_name"
 "available"
 
-TABLE "Company Supplier" as CompSupp:
+TABLE "Supplier" as supplier:
 PK"company_supplier_id"
 "name"
 "address"
@@ -48,11 +47,16 @@ PK"company_supplier_id"
 
 
 #table relations
-Per>-Country
-Per>-Comp["1","*"]
-Comp>-CompSupp
-CompSupp-Prod["1","1"]
-Prod>-Comp["*","1"]
-Prod-<ProdCat
+
+# a simple one to one relation
+person - country
+
+# dual relations
+person - company: (ZeroOrMany,ZeroOrOne)
+
+# dual relations with cardinality
+supplier - product: (One,One)["1","1"]
+company - product: (One,Many)["1","*"]
+product - prodCategories: (One,OneOrMany)["1","1.."]
 
 `

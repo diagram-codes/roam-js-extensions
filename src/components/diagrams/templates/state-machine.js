@@ -1,4 +1,12 @@
 export default `
-a->b,c,d,e
-e->b,c
+"LoggedOut" as out
+"LoggedIn" as in
+
+START->out
+out->in["login success"]
+in->out["logout"]
+out->out["login failure"]
+in->in["read secret"]
+in->error["disk failure"]
+
 `
