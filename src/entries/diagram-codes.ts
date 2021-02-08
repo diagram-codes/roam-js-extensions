@@ -8,10 +8,11 @@ import { ContentState } from "draft-js";
 import templates, { DiagramTypeItem } from "../components/diagrams/templates";
 import './diagram-codes.css';
 
+if(!process.env.REACT_APP_ENGINE_URL) {
+  throw new Error('Diagram Codes Extension for Roam - REACT_APP_ENGINE_URL not set')
+}
 
-//TODO: Solo usuarios autorizados deben poder verlo
-diagramEngine.setEnginePath('http://localhost:3000')
-//diagramEngine.setEnginePath('https://web-engine-demo-dev.diagram.codes/')
+diagramEngine.setEnginePath(process.env.REACT_APP_ENGINE_URL)
 
 /* Create The Code Block*/
 const createDiagramBlocks = async (
@@ -209,6 +210,7 @@ const previewExists = (b: HTMLButtonElement) => {
 }
 
 runExtension("diagram-codes", () => {
+
 
   createButtonObserver({
     shortcut: "add diagram",
