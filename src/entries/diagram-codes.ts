@@ -124,7 +124,6 @@ const createButtonObservers = () => {
 const createPreviewContainer = async (b: HTMLButtonElement, diagramType: string) => {
   const container = document.createElement('div')
   container.classList.add('diagram-codes-preview-container')
-  container.classList.add(diagramType)
   b.parentElement.appendChild(container);
   await diagramEngine.init(container);
   return container;
