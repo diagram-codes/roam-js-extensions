@@ -154,9 +154,11 @@ const connectPreview = (container: HTMLElement,
           updatePreview(editorElem, diagramType, instance.getValue());
         })
         editorElem.setAttribute('diagram-codes-init', 'true')
-        //Trigger a render
-        updatePreview(editorElem, diagramType, editorElem.CodeMirror.getValue())
+
       }
+
+      //Trigger a render
+      updatePreview(editorElem, diagramType, editorElem.CodeMirror.getValue())
 
     } else {
       //No Code block found, maybe the user deleted it? do nothing
