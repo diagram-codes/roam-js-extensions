@@ -1,4 +1,4 @@
-import { createButtonObserver,createHTMLObserver, createHTMLObserverForTarget, getTextTreeByBlockUid, runExtension, TreeNode } from "../entry-helpers";
+import { createButtonObserver, createHTMLObserver, createHTMLObserverForTarget, getTextTreeByBlockUid, runExtension, TreeNode } from "../entry-helpers";
 import { render } from "../components/DiagramCodes";
 import { addButtonListener, getParentUidByBlockUid, getOrderByBlockUid, getUidsFromButton } from "roam-client";
 import diagramEngine from 'diagram-codes-engine-client'
@@ -8,7 +8,7 @@ import { ContentState } from "draft-js";
 import templates, { DiagramTypeItem } from "../components/diagrams/templates";
 import './diagram-codes.css';
 
-if(!process.env.REACT_APP_ENGINE_URL) {
+if (!process.env.REACT_APP_ENGINE_URL) {
   throw new Error('Diagram Codes Extension for Roam - REACT_APP_ENGINE_URL not set')
 }
 
@@ -142,39 +142,40 @@ const connectPreview = (container: HTMLElement,
     throw new Error('(diagram-codes) Element not found rm-block')
   }
 
-  const updatePreviewFromCodeMirrorElem = (elem:HTMLElement) => {
+  /* Observe changes in the code block value and update the preview */
+  const updatePreviewFromCodeMirrorElem = (elem: HTMLElement) => {
     const editorElem = elem as unknown as CodeMirrorHTMLElement
-        if (editorElem && editorElem.CodeMirror) {
-          //The observer callback is also triggered when the user types
-          //But we only need it when the element is created, so let's use a flag
-          if(!editorElem.getAttribute('diagram-codes-init')){
-            editorElem.CodeMirror.on('change', (instance:any, changeObj:any) => {
-              console.log('CodeMirror change event!', diagramType, instance.getValue())
-              updatePreview(container, diagramType, instance.getValue());
-            })
-            editorElem.setAttribute('diagram-codes-init','true')
-            //Trigger a render
-          updatePreview(container, diagramType, editorElem.CodeMirror.getValue())
-          }
-          
-        } else {
-          //No Code block found, maybe the user deleted it? do nothing
-          //The user needs to add it manually and refresh
-          console.error('(Diagram Codes: CodeMirror not found)')
-        }
+    if (editorElem && editorElem.CodeMirror) {
+      //The observer callback is also triggered when the user types
+      //But we only need it when the element is created, so let's use a flag
+      if (!editorElem.getAttribute('diagram-codes-init')) {
+        editorElem.CodeMirror.on('change', (instance: any, changeObj: any) => {
+          console.log('CodeMirror change event!', diagramType, instance.getValue())
+          updatePreview(editorElem, diagramType, instance.getValue());
+        })
+        editorElem.setAttribute('diagram-codes-init', 'true')
+        //Trigger a render
+        updatePreview(editorElem, diagramType, editorElem.CodeMirror.getValue())
+      }
+
+    } else {
+      //No Code block found, maybe the user deleted it? do nothing
+      //The user needs to add it manually and refresh
+      console.error('(Diagram Codes: CodeMirror not found)')
+    }
   }
 
-   /* Add on change handler to codemirror. But we need to check
-        when the codemirror component is rendered by react so we observe changes */
+  /* Add on change handler to codemirror. But we need to check
+       when the codemirror component is rendered by react so we observe changes */
   createHTMLObserverForTarget({
     target: parentBlock,
-    callback: (elem:HTMLElement) => {
+    callback: (elem: HTMLElement) => {
       setTimeout(() => {
         updatePreviewFromCodeMirrorElem(elem);
       }, 800)
     },
-    className:"CodeMirror",
-    tag:"DIV",
+    className: "CodeMirror",
+    tag: "DIV",
     removeCallback: (elem: HTMLElement) => {
       /* CodeMirror instance removed, remove listener */
     }
@@ -182,17 +183,29 @@ const connectPreview = (container: HTMLElement,
 
   /* Trigger first render */
   const elem = parentBlock.querySelector('.CodeMirror');
-  if(elem){
-    setTimeout(()=>{
+  if (elem) {
+    setTimeout(() => {
       updatePreviewFromCodeMirrorElem(elem as HTMLElement);
     }, 800)
   }
 
 }
 
-const updatePreview = (container: HTMLElement, diagramType: string, code: string) => {
+/* Sends a message to the diagram codes engine to render the diagram */
+const updatePreview = (editorElem:CodeMirrorHTMLElement, diagramType: string, code: string) => {
+  /* Get the associated diagram container element */
+  const parentBlock = editorElem.closest('.rm-block');
+  if(!parentBlock){
+    throw new Error ('diagram-codes extension: could not find .rm-block');
+  }
+  let diagramContainer = parentBlock.querySelector('.diagram-codes-preview-container');
+  if(!diagramContainer){
+    //TODO: Here we could create a new container, the button can be found by looking for the data-roamjs-diagram-codes="true" attribute
+    throw new Error ('diagram-codes extension: could not find .diagram-codes-preview-container');
+  }
+
   let diagramParams = {
-    container: container,
+    container: diagramContainer,
     type: diagramType,
     code: code
   }
