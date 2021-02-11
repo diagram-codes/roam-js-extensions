@@ -193,15 +193,18 @@ const connectPreview = (container: HTMLElement,
 
 /* Sends a message to the diagram codes engine to render the diagram */
 const updatePreview = (editorElem:CodeMirrorHTMLElement, diagramType: string, code: string) => {
-  /* Get the associated diagram container element */
-  const parentBlock = editorElem.closest('.rm-block');
+  /* IMPORTANT: This will break if Roam changes the structure, 
+     it assumes there's a rm-block-children */
+  const container1 = editorElem.closest('.rm-block-children');
+  const parentBlock = container1.previousSibling as HTMLElement
   if(!parentBlock){
-    throw new Error ('diagram-codes extension: could not find .rm-block');
+    console.warn('diagram-codes: could not locate .diagram-codes-preview-container parent element')
+    return;
   }
   let diagramContainer = parentBlock.querySelector('.diagram-codes-preview-container');
   if(!diagramContainer){
-    //TODO: Here we could create a new container, the button can be found by looking for the data-roamjs-diagram-codes="true" attribute
-    throw new Error ('diagram-codes extension: could not find .diagram-codes-preview-container');
+    console.warn('diagram-codes: could not locate diagram-codes-preview-container element')
+    return;
   }
 
   let diagramParams = {
