@@ -1,5 +1,5 @@
 export default `
-This is simple tree" as t
+"This is the root of the tree" as t
 t->"A child element"
 t->"Another element with
 a line break" as child1
