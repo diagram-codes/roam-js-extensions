@@ -1,16 +1,8 @@
 export default `
-alias cr="Creative coding with JavaScript"
-alias p5="p5.js"
-alias render="Render Options"
-alias tools="Tools"
-alias t="Techniques"
-
-cr->tools
-cr->render
-cr->t
-
-tools->pr
-tools->p5,"ShaderToy"
-
-render->WebGL,SVG,Canvas
+This is simple tree" as t
+t->"A child element"
+t->"Another element with
+a line break" as child1
+child1->"Item 1","Item 2" as item2
+item2->"And a last one"
 `
